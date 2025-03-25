@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * module.xml
+ *
+ * Declaração do módulo Bis2bis_Publishers, definindo sua versão e dependências.
+ *
+ * @package Bis2bis_Publishers
+ * @author Beatriz Graciani Sborz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
+
+    <module name="Bis2bis_Publishers" setup_version="1.0.0">
+        <sequence>
+            <!-- Dependências necessárias para o módulo funcionar corretamente -->
+            <module name="Magento_Catalog"/>
+            <module name="Magento_Ui"/>
+            <module name="Magento_Backend"/>
+        </sequence>
+    </module>
+
+</config>

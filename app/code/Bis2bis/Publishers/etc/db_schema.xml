@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Declares the schema for the Publishers table.
+ * Declarative schema replaces InstallSchema.php.
+ *
+ * @package Bis2bis\Publishers
+ */
+-->
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+
+    <table name="bis2bis_publishers" resource="default" engine="innodb" comment="Tabela de Editoras">
+        <column name="entity_id" xsi:type="int" unsigned="true" nullable="false" identity="true" comment="Publisher ID"/>
+        <column name="status" xsi:type="boolean" nullable="false" default="1" comment="Status"/>
+        <column name="name" xsi:type="varchar" nullable="false" length="200" comment="Nome da Editora"/>
+        <column name="address" xsi:type="text" nullable="true" comment="Endereço"/>
+        <column name="logo" xsi:type="varchar" length="255" nullable="true" comment="Logo da Editora"/>
+        <column name="cnpj" xsi:type="varchar" length="20" nullable="true" comment="CNPJ"/>
+
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+    </table>
+</schema>

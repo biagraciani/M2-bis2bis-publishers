@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * menu.xml
+ *
+ * Define os itens de menu do módulo Bis2bis_Publishers no painel administrativo do Magento.
+ *
+ * @package Bis2bis_Publishers
+ * @author Beatriz Graciani Sborz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Menu/etc/menu.xsd">
+
+    <menu>
+        <!-- Menu principal Bis2Bis dentro de Catálogo -->
+        <add id="Bis2bis_Publishers::catalog"
+             title="Bis2Bis"
+             translate="title"
+             module="Bis2bis_Publishers"
+             sortOrder="100"
+             parent="Magento_Catalog::catalog"
+             resource="Bis2bis_Publishers::catalog" />
+
+        <!-- Submenu de Editoras -->
+        <add id="Bis2bis_Publishers::list"
+             title="Publishers"
+             translate="title"
+             module="Bis2bis_Publishers"
+             sortOrder="10"
+             parent="Bis2bis_Publishers::catalog"
+             action="bis2bis/publishers/index"
+             resource="Bis2bis_Publishers::list" />
+    </menu>
+
+</config>

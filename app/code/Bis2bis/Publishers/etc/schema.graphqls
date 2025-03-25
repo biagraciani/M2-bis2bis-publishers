@@ -1,0 +1,25 @@
+"""
+Represents a Publisher entity.
+"""
+type Publisher {
+    entity_id: Int @doc(description: "Unique ID of the publisher.")
+    name: String @doc(description: "Name of the publisher.")
+    address: String @doc(description: "Address of the publisher.")
+    logo: String @doc(description: "Path to the logo image.")
+    status: Boolean @doc(description: "Status of the publisher (active/inactive).")
+    cnpj: String @doc(description: "CNPJ of the publisher.")
+}
+
+"""
+Query to retrieve a list of publishers.
+"""
+type Query {
+    publishers(
+        """
+        Optional filter to retrieve a specific publisher by ID.
+        """
+        entityId: Int
+    ): [Publisher] @resolver(class: "Bis2bis\\Publishers\\GraphQl\\Resolver\\PublisherList")
+}
+
+

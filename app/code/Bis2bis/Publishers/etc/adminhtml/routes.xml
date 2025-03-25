@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * routes.xml
+ *
+ * Define a rota administrativa personalizada para o módulo Bis2bis_Publishers.
+ *
+ * @package Bis2bis_Publishers
+ * @author Beatriz Graciani Sborz
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:App/etc/routes.xsd">
+
+    <router id="admin">
+        <route id="bis2bis" frontName="bis2bis">
+            <module name="Bis2bis_Publishers" before="Magento_Backend"/>
+        </route>
+    </router>
+
+</config>
