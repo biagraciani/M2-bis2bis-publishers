@@ -64,8 +64,8 @@ Este arquivo contém o status de desenvolvimento do módulo **Bis2bis_Publishers
 ### 5. **Disponibilize as opções cadastradas via GraphQL**
 - ✅ **Feito**: As opções de editoras podem ser acessadas via GraphQL.
 - ✅ **OBS**: 
-- {"query": "{ publishers { entity_id name address logo status } }" }
-- {"query": "{ publishers(entity_id: 5) { entity_id name }}"}
+- query{ publishers { entity_id name cnpj address logo status}}
+- query{ publishers(entityId: 7) { entity_id name logo address cnpj status }}
 
 
 ### 6. **Todo código deve passar nos testes Magento Static (Magento Coding standards)**

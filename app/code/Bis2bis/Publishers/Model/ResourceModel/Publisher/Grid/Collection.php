@@ -2,29 +2,39 @@
 
 namespace Bis2bis\Publishers\Model\ResourceModel\Publisher\Grid;
 
-class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Collection implements \Magento\Framework\Api\Search\SearchResultInterface
+use Magento\Framework\Api\Search\SearchResultInterface;
+use Magento\Framework\View\Element\UiComponent\DataProvider\Document;
+use Bis2bis\Publishers\Model\ResourceModel\Publisher\Collection as PublishersCollection;
+
+/**
+ * Class Collection
+ *
+ * This class extends the SearchResult to manage the Publisher Grid collection.
+ * It includes methods to handle aggregations, total count, and filtering of publishers.
+ */
+class Collection extends PublishersCollection implements SearchResultInterface
 {
     /**
-     * Aggregations
+     * Aggregations for the collection.
      *
      * @var \Magento\Framework\Search\AggregationInterface
      */
     protected $_aggregations;
 
     /**
-     * constructor
+     * Constructor to initialize the collection.
      *
      * @param \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory
      * @param \Psr\Log\LoggerInterface $logger
      * @param \Magento\Framework\Data\Collection\Db\FetchStrategyInterface $fetchStrategy
      * @param \Magento\Framework\Event\ManagerInterface $eventManager
-     * @param $mainTable
-     * @param $eventPrefix
-     * @param $eventObject
-     * @param $resourceModel
-     * @param $model
-     * @param \Magento\Framework\DB\Adapter\AdapterInterface $connection
-     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource
+     * @param string $mainTable
+     * @param string $eventPrefix
+     * @param string $eventObject
+     * @param string $resourceModel
+     * @param string $model
+     * @param \Magento\Framework\DB\Adapter\AdapterInterface|null $connection
+     * @param \Magento\Framework\Model\ResourceModel\Db\AbstractDb|null $resource
      */
     public function __construct(
         \Magento\Framework\Data\Collection\EntityFactoryInterface $entityFactory,
@@ -35,8 +45,8 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
         $eventPrefix,
         $eventObject,
         $resourceModel,
-        $model = 'Magento\Framework\View\Element\UiComponent\DataProvider\Document',
-        \Magento\Framework\DB\Adapter\AdapterInterface  $connection = null,
+        $model = Document::class,
+        \Magento\Framework\DB\Adapter\AdapterInterface $connection = null,
         \Magento\Framework\Model\ResourceModel\Db\AbstractDb $resource = null
     ) {
         parent::__construct($entityFactory, $logger, $fetchStrategy, $eventManager, $connection, $resource);
@@ -46,8 +56,12 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
         $this->setMainTable($mainTable);
     }
 
-
     /**
+     * Get aggregations for the collection.
+     *
+     * This method returns the aggregation data for the Publisher collection.
+     * Aggregations are used to group and summarize data based on specific criteria.
+     *
      * @return \Magento\Framework\Search\AggregationInterface
      */
     public function getAggregations()
@@ -56,21 +70,24 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
+     * Set aggregations for the collection.
+     *
      * @param \Magento\Framework\Search\AggregationInterface $aggregations
      * @return $this
      */
     public function setAggregations($aggregations)
     {
         $this->_aggregations = $aggregations;
+        return $this;
     }
 
-
     /**
-     * Retrieve all ids for collection
-     * Backward compatibility with EAV collection
+     * Retrieve all ids for collection.
      *
-     * @param int $limit
-     * @param int $offset
+     * Used for backward compatibility with EAV collection.
+     *
+     * @param int|null $limit
+     * @param int|null $offset
      * @return array
      */
     public function getAllIds($limit = null, $offset = null)
@@ -79,7 +96,7 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
-     * Get search criteria.
+     * Get search criteria for the collection.
      *
      * @return \Magento\Framework\Api\SearchCriteriaInterface|null
      */
@@ -89,11 +106,10 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
-     * Set search criteria.
+     * Set search criteria for the collection.
      *
      * @param \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
      * @return $this
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setSearchCriteria(\Magento\Framework\Api\SearchCriteriaInterface $searchCriteria = null)
     {
@@ -101,7 +117,7 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
-     * Get total count.
+     * Get the total count of items in the collection.
      *
      * @return int
      */
@@ -111,11 +127,10 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
-     * Set total count.
+     * Set the total count of items in the collection.
      *
      * @param int $totalCount
      * @return $this
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setTotalCount($totalCount)
     {
@@ -123,11 +138,10 @@ class Collection extends \Bis2bis\Publishers\Model\ResourceModel\Publisher\Colle
     }
 
     /**
-     * Set items list.
+     * Set the list of items in the collection.
      *
      * @param \Magento\Framework\Api\ExtensibleDataInterface[] $items
      * @return $this
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function setItems(array $items = null)
     {

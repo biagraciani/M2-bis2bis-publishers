@@ -10,9 +10,10 @@ use Magento\Framework\UrlInterface;
 class Action extends Column
 {
     /** Url path */
-    const ROW_EDIT_URL = 'bis2bis/publishers/edit';
-     /** Url path */
-    const ROW_DELETE_URL = 'bis2bis/publishers/delete';
+    public const ROW_EDIT_URL = 'bis2bis/publishers/edit';  // Definido como public
+    /** Url path */
+    public const ROW_DELETE_URL = 'bis2bis/publishers/delete'; // Definido como public
+
     /** @var UrlInterface */
     protected $_urlBuilder;
 

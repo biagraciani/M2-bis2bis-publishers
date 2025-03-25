@@ -40,7 +40,7 @@ class PublisherList implements ResolverInterface
     /**
      * Resolve the "publishers" GraphQL query.
      *
-     * If the optional "entity_id" argument is passed, filters the collection by it.
+     * If the optional "entityId" argument is passed, filters the collection by it.
      *
      * @param Field $field
      * @param mixed $context
@@ -51,17 +51,16 @@ class PublisherList implements ResolverInterface
      */
     public function resolve(
         Field $field,
-              $context,
+        $context,
         ResolveInfo $info,
         array $value = null,
         array $args = null
     ): array {
         $collection = $this->collectionFactory->create();
 
-        if (!empty($args['entity_id'])) {
-            $collection->addFieldToFilter('entity_id', (int) $args['entity_id']);
+        if (!empty($args['entityId'])) {
+            $collection->addFieldToFilter('entity_id', (int) $args['entityId']);
         }
-
         $items = [];
         foreach ($collection as $publisher) {
             $items[] = [
