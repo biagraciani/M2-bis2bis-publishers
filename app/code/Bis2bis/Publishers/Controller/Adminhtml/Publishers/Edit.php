@@ -17,8 +17,14 @@ use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\Page;
 use Magento\Framework\View\Result\PageFactory;
-use Bis2bis\Publishers\Model\PublisherFactory;
+use Bis2bis\Publishers\Api\PublisherRepositoryInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
+/**
+ * Edit Publisher Controller.
+ *
+ * Exibe o formulário para edição ou criação de uma editora.
+ */
 class Edit extends Action
 {
     /**
@@ -27,29 +33,29 @@ class Edit extends Action
     protected PageFactory $resultPageFactory;
 
     /**
-     * @var PublisherFactory
+     * @var PublisherRepositoryInterface
      */
-    protected PublisherFactory $publisherFactory;
+    protected PublisherRepositoryInterface $publisherRepository;
 
     /**
-     * Edit constructor.
+     * Constructor.
      *
      * @param Context $context
      * @param PageFactory $resultPageFactory
-     * @param PublisherFactory $publisherFactory
+     * @param PublisherRepositoryInterface $publisherRepository
      */
     public function __construct(
         Context $context,
         PageFactory $resultPageFactory,
-        PublisherFactory $publisherFactory
+        PublisherRepositoryInterface $publisherRepository
     ) {
         parent::__construct($context);
-        $this->resultPageFactory = $resultPageFactory;
-        $this->publisherFactory = $publisherFactory;
+        $this->resultPageFactory   = $resultPageFactory;
+        $this->publisherRepository = $publisherRepository;
     }
 
     /**
-     * Executa a exibição do formulário de edição ou criação da editora.
+     * Execute the edit action.
      *
      * @return Page
      */
@@ -59,8 +65,9 @@ class Edit extends Action
         $resultPage = $this->resultPageFactory->create();
 
         if ($id) {
-            $publisher = $this->publisherFactory->create()->load($id);
-            if (!$publisher->getId()) {
+            try {
+                $this->publisherRepository->getById($id);
+            } catch (NoSuchEntityException $e) {
                 $this->messageManager->addErrorMessage(__('This publisher no longer exists.'));
                 return $resultPage;
             }
@@ -73,7 +80,7 @@ class Edit extends Action
     }
 
     /**
-     * Verifica se o usuário atual tem permissão para editar uma editora.
+     * Check if current user is allowed to edit a publisher.
      *
      * @return bool
      */

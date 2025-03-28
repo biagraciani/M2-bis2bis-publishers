@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../../../../lib/internal/Magento/Framework/ObjectManager/etc/config.xsd">
+    <preference for="Bis2bis\Publishers\Api\PublisherRepositoryInterface" type="Bis2bis\Publishers\Model\Api\PublisherRepository" />
+    <preference for="Bis2bis\Publishers\Api\Data\PublisherInterface" type="Bis2bis\Publishers\Model\Publisher" />
     <type name="Magento\Framework\View\Element\UiComponent\DataProvider\CollectionFactory">
         <arguments>
             <argument name="collections" xsi:type="array">
@@ -16,8 +18,6 @@
             <argument name="resourceModel" xsi:type="string">Bis2bis\Publishers\Model\ResourceModel\Publisher</argument>
         </arguments>
     </virtualType>
-
-
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
@@ -25,5 +25,4 @@
             </argument>
         </arguments>
     </type>
-
 </config>

@@ -16,34 +16,33 @@ namespace Bis2bis\Publishers\Controller\Adminhtml\Publishers;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Controller\Result\Redirect;
-use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Exception\LocalizedException;
-use Bis2bis\Publishers\Model\PublisherFactory;
+use Bis2bis\Publishers\Api\PublisherRepositoryInterface;
 
 /**
  * Class Delete
  *
- * Realiza a exclusão de uma editora pelo ID.
+ * Realiza a exclusão de uma editora utilizando o PublisherRepositoryInterface.
  */
 class Delete extends Action
 {
     /**
-     * @var PublisherFactory
+     * @var PublisherRepositoryInterface
      */
-    protected PublisherFactory $publisherFactory;
+    protected PublisherRepositoryInterface $publisherRepository;
 
     /**
-     * Delete constructor.
+     * Constructor.
      *
      * @param Context $context
-     * @param PublisherFactory $publisherFactory
+     * @param PublisherRepositoryInterface $publisherRepository
      */
     public function __construct(
         Context $context,
-        PublisherFactory $publisherFactory
+        PublisherRepositoryInterface $publisherRepository
     ) {
         parent::__construct($context);
-        $this->publisherFactory = $publisherFactory;
+        $this->publisherRepository = $publisherRepository;
     }
 
     /**
@@ -63,17 +62,15 @@ class Delete extends Action
         }
 
         try {
-            $publisher = $this->publisherFactory->create()->load($id);
-            if (!$publisher->getId()) {
-                $this->messageManager->addErrorMessage(__('This publisher no longer exists.'));
-            } else {
-                $publisher->delete();
-                $this->messageManager->addSuccessMessage(__('You have deleted the publisher.'));
-            }
+            $this->publisherRepository->deleteById($id);
+            $this->messageManager->addSuccessMessage(__('You have deleted the publisher.'));
         } catch (LocalizedException $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
         } catch (\Exception $e) {
-            $this->messageManager->addExceptionMessage($e, __('Something went wrong while deleting the publisher.'));
+            $this->messageManager->addExceptionMessage(
+                $e,
+                __('Something went wrong while deleting the publisher.')
+            );
         }
 
         return $resultRedirect->setPath('*/*/');
