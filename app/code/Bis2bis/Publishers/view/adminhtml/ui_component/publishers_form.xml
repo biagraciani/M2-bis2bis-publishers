@@ -128,6 +128,7 @@
                     <item name="label" xsi:type="string" translate="true">CNPJ</item>
                     <item name="dataScope" xsi:type="string">cnpj</item>
                     <item name="sortOrder" xsi:type="number">40</item>
+                    <item name="max_text_length" xsi:type="number">18</item>
                     <item name="validation" xsi:type="array">
                         <item name="validate-cnpj" xsi:type="boolean">true</item>
                     </item>

@@ -1,12 +1,4 @@
 <?php
-/**
- * Copyright © Magento, Inc. All rights reserved.
- * See COPYING.txt for license details.
- *
- * @package   Bis2bis\Publishers\Controller\Adminhtml\Publishers
- * @author
- */
-
 declare(strict_types=1);
 
 namespace Bis2bis\Publishers\Controller\Adminhtml\Publishers;
@@ -23,9 +15,10 @@ use Magento\Framework\Exception\LocalizedException;
 /**
  * Save Publisher Controller
  *
- * Este controller é responsável por receber os dados do formulário na área administrativa,
- * processar o upload do arquivo de logo, validar os dados e salvar a entidade Publisher
- * utilizando o PublisherRepositoryInterface para persistência dos dados.
+ * Recebe os dados do formulário, processa o upload do logo, valida os dados
+ * (nome e CNPJ) e salva a entidade Publisher utilizando o PublisherRepositoryInterface.
+ *
+ * @package Bis2bis\Publishers\Controller\Adminhtml\Publishers
  */
 class Save extends Action
 {
@@ -55,7 +48,7 @@ class Save extends Action
     protected \Magento\Framework\Filesystem\Directory\WriteInterface $mediaDirectory;
 
     /**
-     * Construtor
+     * Constructor.
      *
      * @param \Magento\Backend\App\Action\Context $context
      * @param \Magento\Framework\View\Result\PageFactory $resultPageFactory
@@ -81,35 +74,21 @@ class Save extends Action
     }
 
     /**
-     * Executa a ação de salvar a entidade Publisher.
+     * Execute the save action.
      *
-     * Este método realiza as seguintes operações:
-     * - Recupera os dados enviados via POST.
-     * - Processa o upload da imagem de logo, se houver.
-     * - Valida o campo "name" para garantir que seja alfanumérico e tenha no máximo 200 caracteres.
-     * - Carrega o Publisher existente ou instancia um novo, conforme o parâmetro 'entity_id'.
-     * - Atualiza os dados da entidade e a persiste através do PublisherRepository.
-     * - Exibe mensagens de sucesso ou erro conforme o resultado da operação.
-     *
-     * @return Redirect Resultado da ação de redirecionamento.
+     * @return Redirect
+     * @throws LocalizedException
      */
     public function execute(): Redirect
     {
-        // Recupera os dados enviados pelo formulário
-        $data = $this->getRequest()->getPostValue();
-        // Cria o objeto de redirecionamento
         $resultRedirect = $this->resultRedirectFactory->create();
-        // Obtém o ID da entidade Publisher, se presente
+        $data = $this->getRequest()->getPostValue();
         $id = $this->getRequest()->getParam('entity_id');
-
+        
         try {
-            // Processa o upload do arquivo de logo, se houver
+            // Processa o upload do logo, se houver
             if (isset($data['logo'][0]['tmp_name']) && !empty($data['logo'][0]['tmp_name'])) {
-                // Constrói o caminho completo do arquivo temporário
-                $tempFilePath = $data['logo'][0]['path'] . '/' . $data['logo'][0]['file'];
-                // Atualiza o valor do tmp_name com o caminho completo
-                $data['logo'][0]['tmp_name'] = $tempFilePath;
-                // Realiza o upload e validação da imagem e atualiza o campo logo com o caminho relativo do arquivo
+                $data['logo'][0]['tmp_name'] = $data['logo'][0]['path'] . '/' . $data['logo'][0]['file'];;
                 $data['logo'] = $this->uploadAndValidateImage($id, $data['logo'][0]);
             } elseif (isset($data['logo'][0]['name'])) {
                 $data['logo'] = $data['logo'][0]['name'];
@@ -117,28 +96,111 @@ class Save extends Action
                 unset($data['logo']);
             }
 
-            // Valida o campo "name": deve ser alfanumérico e conter até 200 caracteres
-            if (empty($data['name']) || !preg_match('/^[a-zA-Z0-9\s]{1,200}$/', $data['name'])) {
-                throw new LocalizedException(__('The name must be alphanumeric and up to 200 characters.'));
+            // Validação do nome
+            if (!empty($data['name'])) {
+                $this->validateName($data['name']);
+            }else{
+                throw new LocalizedException(__('The publisher name is required .'));
             }
 
-            // Se houver ID, carrega a entidade existente; caso contrário, cria uma nova
+            // Validação do cnpj
+            if (!empty($data['cnpj'])) {
+                $this->validateCnpj($data['cnpj']);
+            }
+
+            // Carrega a entidade existente ou cria um novo publiser
             if (!empty($id)) {
-                $model = $this->publisherRepository->getById($id);
-                $model->addData($data);
+                $publisher = $this->publisherRepository->getById($id);
+                $publisher->addData($data);
             } else {
-                $model = $this->publisherFactory->create();
-                $model->setData($data);
+                $publisher = $this->publisherFactory->create();
+                $publisher->setData($data);
             }
 
-            $this->publisherRepository->save($model);
-
+            $this->publisherRepository->save($publisher);
             $this->messageManager->addSuccessMessage(__('You saved the publisher.'));
+        } catch (LocalizedException $e) {
+            $this->messageManager->addErrorMessage($e->getMessage());
+            return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
         } catch (\Exception $e) {
             $this->messageManager->addExceptionMessage($e, __('Something went wrong while saving the publisher.'));
+            return $resultRedirect->setPath('*/*/edit', ['id' => $id]);
+        }
+        return $resultRedirect->setPath('*/*/');
+    }
+
+    /**
+     * Validates the publisher name.
+     *
+     * The name must be alphanumeric and contain up to 200 characters.
+     *
+     * @param string $name
+     * @return void
+     * @throws LocalizedException
+     */
+    protected function validateName(string $name): void
+    {
+        if (empty($name) || !preg_match('/^[a-zA-Z0-9\s]{1,200}$/', $name)) {
+            throw new LocalizedException(__('The name must be alphanumeric and up to 200 characters.'));
+        }
+    }
+    /**
+     * Validates the CNPJ.
+     *
+     * Removes non-numeric characters and validates length, repeated digits,
+     * and verifying digits using the standard algorithm.
+     *
+     * @param string $cnpj
+     * @return void
+     * @throws LocalizedException
+     */
+    protected function validateCnpj(string $cnpj): void
+    {
+        //valida se contem letras
+        if (preg_match('/[a-zA-Z]/', $cnpj)) {
+            throw new LocalizedException(__('Invalid CNPJ '.$cnpj));
         }
 
-        return $resultRedirect->setPath('*/*/');
+        // Remove caracteres não numéricos
+        $cnpj = preg_replace('/\D/', '', $cnpj);
+
+        // O CNPJ deve ter 14 dígitos
+        if (strlen($cnpj) !== 14) {
+            throw new LocalizedException(__('Invalid CNPJ '.$cnpj));
+        }
+
+        // Verifica se todos os dígitos são iguais
+        if (preg_match('/(\d)\1{13}/', $cnpj)) {
+            throw new LocalizedException(__('Invalid CNPJ '.$cnpj));
+        }
+
+        $digits = str_split($cnpj);
+
+        // Primeiro dígito verificador
+        $sum = 0;
+        $multipliers = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        for ($i = 0; $i < 12; $i++) {
+            $sum += $digits[$i] * $multipliers[$i];
+        }
+        $remainder = $sum % 11;
+        $firstVerifyingDigit = ($remainder < 2 ? 0 : 11 - $remainder);
+
+        if ((int)$digits[12] !== $firstVerifyingDigit) {
+            throw new LocalizedException(__('Invalid CNPJ '.$cnpj));
+        }
+
+        // Segundo dígito verificador
+        $sum = 0;
+        $multipliers = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+        for ($i = 0; $i < 13; $i++) {
+            $sum += $digits[$i] * $multipliers[$i];
+        }
+        $remainder = $sum % 11;
+        $secondVerifyingDigit = ($remainder < 2 ? 0 : 11 - $remainder);
+
+        if ((int)$digits[13] !== $secondVerifyingDigit) {
+            throw new LocalizedException(__('Invalid CNPJ '.$cnpj));
+        }
     }
 
     /**
@@ -197,12 +259,9 @@ class Save extends Action
     }
 
     /**
-     * Verifica se o usuário atual tem permissão para salvar publishers.
+     * Check if the current user is allowed to save publishers.
      *
-     * Este método utiliza o sistema de ACL do Magento para verificar se o usuário logado possui
-     * a permissão necessária, definida pelo recurso 'Bis2bis_Publishers::edit'.
-     *
-     * @return bool Retorna true se o usuário tiver permissão; caso contrário, false.
+     * @return bool
      */
     protected function _isAllowed(): bool
     {

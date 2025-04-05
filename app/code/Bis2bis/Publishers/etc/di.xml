@@ -12,9 +12,7 @@
     </type>
     <virtualType name="Bis2bis\Publishers\Model\ResourceModel\Publisher\Grid\Collection" type="Magento\Framework\View\Element\UiComponent\DataProvider\SearchResult">
         <arguments>
-            <!-- Table name to insert data and listing data -->
             <argument name="mainTable" xsi:type="string">bis2bis_publishers</argument>
-            <!-- Resource model name -->
             <argument name="resourceModel" xsi:type="string">Bis2bis\Publishers\Model\ResourceModel\Publisher</argument>
         </arguments>
     </virtualType>
